@@ -96,4 +96,29 @@ class GithubService {
         }
     }
     
+    func getUser() async throws -> UserInfo {
+        let response = await AF.request(
+            "\(baseUrl)/user",
+            method: .get,
+            headers: headers
+        )
+        .validate(statusCode: 200..<300)
+        .serializingDecodable(UserInfo.self)
+        .response
+
+        if let data = response.data,
+           let json = String(data: data, encoding: .utf8) {
+            print("Response Body:")
+            print(json)
+        }
+
+        switch response.result {
+        case .success(let user):
+            return user
+        case .failure(let error):
+            print("Alamofire Error")
+            print(error)
+            throw error
+        }
+    }
 }
